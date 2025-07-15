@@ -15,8 +15,8 @@
 #define TCAADDR 0x70
 
 // Define as portas do multiplexador onde os MPU6050s estão conectados
-#define MPU6050_MUX_PORT_A 5 // Primeiro MPU6050 na porta 5
-#define MPU6050_MUX_PORT_B 3 // Segundo MPU6050 na porta 3
+#define MPU6050_MUX_PORT_A 6 // Primeiro MPU6050 na porta 5
+#define MPU6050_MUX_PORT_B 4 // Segundo MPU6050 na porta 3
 
 // Função auxiliar para selecionar a porta do multiplexador
 // Esta função envia um comando I2C para o TCA9548A

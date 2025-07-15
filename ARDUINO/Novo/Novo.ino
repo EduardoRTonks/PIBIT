@@ -1,6 +1,7 @@
 /*
   Sketch Principal: Múltiplos MPU6050s via TCA9548A Multiplexador I2C
   Adaptado para saída CSV para plotagem em Python.
+  MODIFICADO PARA INCLUIR UM 3º SENSOR NA PORTA 6.
 */
 
 #include "MPU6050_Sensor.h" // Inclui a nova biblioteca da classe MPU6050_Sensor
@@ -13,12 +14,14 @@
 // --- Pinos do Multiplexador ---
 #define MPU_PORT_1 2
 #define MPU_PORT_2 4
+#define MPU_PORT_3 6 // Adicionado para o MPU 6
 
 // --- Endereços I2C dos MPU6050s ---
 #define MPU6050_DEFAULT_I2C_ADDRESS 0x68
 
 MPU6050_Sensor mpu1(MPU6050_DEFAULT_I2C_ADDRESS, MPU_PORT_1);
 MPU6050_Sensor mpu2(MPU6050_DEFAULT_I2C_ADDRESS, MPU_PORT_2);
+MPU6050_Sensor mpu3(MPU6050_DEFAULT_I2C_ADDRESS, MPU_PORT_3); // Adicionado para o MPU 6
 
 PushButton recalibrateButton(7);
 
@@ -65,6 +68,18 @@ void setup() {
   Serial.println("===== MPU da Porta " + String(MPU_PORT_2) + " Calibrado! =====");
   Serial.println("------------------------------------");
 
+  // --- Inicialização e Calibração do MPU na Porta 3 (MPU_PORT_3) --- // Adicionado para o MPU 6
+  Serial.print("\nInicializando MPU na Porta ");
+  Serial.print(MPU_PORT_3);
+  Serial.println("...");
+  mpu3.begin();
+  Serial.println("Calibrando MPU da Porta " + String(MPU_PORT_3) + ", deixe parado!");
+  delay(1000);
+  mpu3.calibrate(200);
+  mpu3.reset();
+  Serial.println("===== MPU da Porta " + String(MPU_PORT_3) + " Calibrado! =====");
+  Serial.println("------------------------------------");
+
   Serial.println("\nTodos os MPUs inicializados e calibrados. Pronto para ler!");
   Serial.println("FORMATO DE SAÍDA: <ID_SENSOR>,<ROLL>,<PITCH>,<YAW>");
   Serial.println("DATA_START");// Adicionado: Marcador para o Python saber que os dados CSV começam aqui
@@ -73,17 +88,17 @@ void setup() {
 void loop() {
   recalibrateButton.button_loop();
 
-  // --- Leitura e impressão do MPU da Porta 1 (Porta 5) em formato CSV ---
+  // --- Leitura e impressão do MPU da Porta 1 em formato CSV ---
   mpu1.loop();
   Serial.print(MPU_PORT_1); // ID do sensor (porta do MUX)
   Serial.print(",");
-  Serial.print(mpu1.getAngleX(), 2); // Limita para 2 casas decimais para reduzir o tamanho da string
+  Serial.print(mpu1.getAngleX(), 2); // Limita para 2 casas decimais
   Serial.print(",");
-  Serial.print(mpu1.getAngleY(), 2); // Limita para 2 casas decimais para reduzir o tamanho da string
+  Serial.print(mpu1.getAngleY(), 2); // Limita para 2 casas decimais
   Serial.print(",");
-  Serial.println(mpu1.getAngleZ(), 2); // Limita para 2 casas decimais para reduzir o tamanho da string
+  Serial.println(mpu1.getAngleZ(), 2); // Limita para 2 casas decimais
 
-  // --- Leitura e impressão do MPU da Porta 2 (Porta 3) em formato CSV ---
+  // --- Leitura e impressão do MPU da Porta 2 em formato CSV ---
   mpu2.loop();
   Serial.print(MPU_PORT_2); // ID do sensor (porta do MUX)
   Serial.print(",");
@@ -93,10 +108,20 @@ void loop() {
   Serial.print(",");
   Serial.println(mpu2.getAngleZ(), 2);
 
+  // --- Leitura e impressão do MPU da Porta 3 em formato CSV --- // Adicionado para o MPU 6
+  mpu3.loop();
+  Serial.print(MPU_PORT_3); // ID do sensor (porta do MUX)
+  Serial.print(",");
+  Serial.print(mpu3.getAngleX(), 2);
+  Serial.print(",");
+  Serial.print(mpu3.getAngleY(), 2);
+  Serial.print(",");
+  Serial.println(mpu3.getAngleZ(), 2);
+
 
   if (recalibrateButton.pressed()) {
     Serial.println("RECALIBRATING_START");// Adicionado: Marcador para o Python
-    Serial.println("Botao de recalibracao pressionado! Recalibrando ambos os MPUs...");
+    Serial.println("Botao de recalibracao pressionado! Recalibrando todos os MPUs...");
 
     Serial.println("Recalibrando MPU da Porta " + String(MPU_PORT_1) + "...");
     mpu1.calibrate(400);
@@ -108,8 +133,13 @@ void loop() {
     mpu2.reset();
     Serial.println("MPU da Porta " + String(MPU_PORT_2) + " recalibrado.");
 
+    Serial.println("Recalibrando MPU da Porta " + String(MPU_PORT_3) + "..."); // Adicionado para o MPU 6
+    mpu3.calibrate(400);
+    mpu3.reset();
+    Serial.println("MPU da Porta " + String(MPU_PORT_3) + " recalibrado."); // Adicionado para o MPU 6
+
     Serial.println("RECALIBRATING_END"); // Adicionado: Marcador para o Python
-    Serial.println("Ambos os MPUs recalibrados.");
+    Serial.println("Todos os MPUs recalibrados.");
     Serial.println("DATA_START"); // Adicionado: Recomeça o fluxo de dados CSV
   }
   delay(0); // Mantenha delay(0) para a maior velocidade possível
