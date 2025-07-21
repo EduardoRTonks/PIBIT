@@ -9,8 +9,8 @@
 #include <WiFiUdp.h>
 
 // --- Configurações de Rede ---
-const char* ssid = "POCO";    // <<-- INSIRA O NOME DA SUA REDE AQUI
-const char* password = "12345678"; // <<-- INSIRA A SENHA DA SUA REDE AQUI
+const char* ssid = "nome";    // <<-- INSIRA O NOME DA SUA REDE AQUI
+const char* password = "senha"; // <<-- INSIRA A SENHA DA SUA REDE AQUI
 
 // --- Configurações UDP ---
 WiFiUDP Udp;

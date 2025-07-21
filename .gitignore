@@ -1,0 +1,14 @@
+# Ignorar pastas de ambiente virtual do Python
+meu_ambiente/
+
+# Ignorar arquivos de dados .csv
+*.csv
+
+# Ignorar arquivos AppImage (instaladores/binários)
+*.AppImage
+
+ARDUINO/Novo/
+ARDUINO/v.1/
+ARDUINO/meu/
+ARDUINO/Q1086-Sketch/
+ARDUINO/teste/ 
